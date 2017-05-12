@@ -1,0 +1,29 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "m+iiamnbukzE8kFPfBche6D0FmQ=",
+			"path": "github.com/Sirupsen/logrus",
+			"revision": "5b60b3d3ee017ed00bcd0225fcca7acab767844b",
+			"revisionTime": "2017-05-04T07:10:19Z"
+		},
+		{
+			"checksumSHA1": "2qJoId7IglY1d3GIEgm1xIBeUwk=",
+			"path": "github.com/gin-contrib/cors",
+			"revision": "cf4846e6a636a76237a28d9286f163c132e841bc",
+			"revisionTime": "2017-03-18T12:53:40Z"
+		},
+		{
+			"checksumSHA1": "E8pDMGySfy5Mw+jzXOkOxo35bww=",
+			"path": "golang.org/x/crypto/scrypt",
+			"revision": "122d919ec1efcfb58483215da23f815853e24b81",
+			"revisionTime": "2017-05-08T12:54:44Z"
+		},
+		{
+			"path": "golang.org/x/sys/unix",
+			"revision": ""
+		}
+	],
+	"rootPath": "webim"
+}
