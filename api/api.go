@@ -7,8 +7,8 @@ import (
 	"webim/db"
 	"webim/service"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +21,10 @@ func WebIMAPI(port string, dbs *db.DBService) {
 	router := gin.Default()
 	us = service.NewUserService(dbs)
 
+	// use session
+	store := sessions.NewCookieStore([]byte("secret"))
+	router.Use(sessions.Sessions("webim-session", store))
+	// use cors
 	router.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"http://tinyurl.api.adolphlwq.xyz"},
 		AllowMethods: []string{"*"},
@@ -29,42 +33,42 @@ func WebIMAPI(port string, dbs *db.DBService) {
 			"Access-Control-Allow-Headers", "Access-Control-Allow-Methods"},
 		//AllowCredentials: true,
 		AllowOriginFunc: func(origin string) bool {
-			logrus.Info("origin is ", origin)
 			return true
 		},
 		MaxAge: 12 * time.Hour,
 	}))
 
 	router.GET("/health", HealthCheck)
+	router.GET("/incr", Incr)
 
 	userAPI := router.Group("/api/v1/user")
 	{
-		userAPI.GET("/login", UserLogin)
+		userAPI.POST("/login", UserLogin)
 		userAPI.POST("/register", UserRegister)
+	}
+
+	friendAPI := router.Group("/api/v1/friend")
+	{
+		friendAPI.POST("/add", AddFriend)
 	}
 
 	router.Run(port)
 }
 
-// UserRegister handle user register
-func UserRegister(c *gin.Context) {
-	var user db.User
-	c.BindJSON(&user)
-
-	err := us.UserRegister(user.Username, user.Password)
-	if err == nil {
-		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK,
-			"data": "register successfully, please login."})
+// Incr
+func Incr(c *gin.Context) {
+	session := sessions.Default(c)
+	var count int
+	v := session.Get("count")
+	if v == nil {
+		count = 0
 	} else {
-		logrus.Warn("register user info error: ", err)
-		c.JSON(http.StatusOK, gin.H{"status": http.StatusOK,
-			"data": "register error, please try again."})
+		count = v.(int)
+		count++
 	}
-}
-
-// UserLogin handle user login
-func UserLogin(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": "userlogin"})
+	session.Set("count", count)
+	session.Save()
+	c.JSON(200, gin.H{"count": count})
 }
 
 // HealthCheck return "health" if everything is OK

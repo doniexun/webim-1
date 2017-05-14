@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"time"
 
+	"fmt"
+
 	"github.com/Sirupsen/logrus"
 )
 
@@ -31,6 +33,33 @@ func (dbs *DBService) CheckUser(username string) bool {
 	return true
 }
 
+// CheckUserPass check if user and pass exist in db
+func (dbs *DBService) CheckUserPass(username, encryptPass string) error {
+	db := dbs.CreateDB()
+	defer db.Close()
+
+	stmt, err := db.Prepare("SELECT username FROM user WHERE username=? " +
+		" AND password=?")
+	defer stmt.Close()
+	if err != nil {
+		logrus.Warn("prepared stmt error: ", err)
+		return err
+	}
+
+	var username_ string
+	err = stmt.QueryRow(username, encryptPass).Scan(&username_)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("username or password error")
+		} else {
+			logrus.Warn("query username ", username, " error: ", err)
+			return fmt.Errorf("please try again")
+		}
+	}
+
+	return nil
+}
+
 func (dbs *DBService) InsertUser(username, encryptpass string) error {
 	db := dbs.CreateDB()
 	defer db.Close()
@@ -52,7 +81,14 @@ func (dbs *DBService) InsertUser(username, encryptpass string) error {
 	_, err = res.RowsAffected()
 	if err != nil {
 		logrus.Warn("get affected lines from restult error: ", err)
+		return err
 	}
 
 	return nil
+}
+
+func handleStmtErr(err error) {
+	if err != nil {
+		logrus.Fatal("prepared stmt error: ", err)
+	}
 }

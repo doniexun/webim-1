@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	"sync"
 
 	"github.com/Sirupsen/logrus"
@@ -66,6 +65,15 @@ func (dbs *DBService) Setup() {
 	db := dbs.CreateBareDB()
 	defer db.Close()
 
+	dbSchema := `
+		CREATE DATABASE IF NOT EXISTS ` + dbs.DBName + ` 
+			DEFAULT CHARACTER SET utf8mb4
+			DEFAULT COLLATE utf8mb4_unicode_ci;
+	`
+	useDB := "USE " + dbs.DBName + ";"
+	//utf8mb4 := "SET NAMES 'utf8mb4'; SET CHARACTER SET utf8mb4;"
+	utf8mb4 := "SET NAMES 'utf8mb4';"
+
 	userTable := `
 		CREATE TABLE IF NOT EXISTS ` + dbs.DBName + `.user (
 			id INT(64) NOT NULL AUTO_INCREMENT,
@@ -76,14 +84,16 @@ func (dbs *DBService) Setup() {
 		)
 		CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 	`
-	dbSchema := `
-		CREATE DATABASE IF NOT EXISTS ` + dbs.DBName + ` 
-			DEFAULT CHARACTER SET utf8mb4
-			DEFAULT COLLATE utf8mb4_unicode_ci;
+
+	friendTable := `
+		CREATE TABLE IF NOT EXISTS ` + dbs.DBName + `.friend_relationship (
+			id INT(64) NOT NULL AUTO_INCREMENT,
+			fmin VARCHAR(20) NOT NULL,
+			fmax VARCHAR(20) NOT NULL,
+			PRIMARY KEY (id)
+		)
+		CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 	`
-	useDB := "USE " + dbs.DBName + ";"
-	//utf8mb4 := "SET NAMES 'utf8mb4'; SET CHARACTER SET utf8mb4;"
-	utf8mb4 := "SET NAMES 'utf8mb4';"
 
 	onceSetupDB.Do(func() {
 		logrus.Info("start create db %s if not exists.", dbs.DBName)
@@ -96,9 +106,14 @@ func (dbs *DBService) Setup() {
 			logrus.Fatal("use db ", dbs.DBName, " error:", err)
 		}
 
-		logrus.Info("start create table url if not exists.")
+		logrus.Info("start create table user if not exists.")
 		if _, err := db.Exec(userTable); err != nil {
-			logrus.Fatal("setup table error:", err)
+			logrus.Fatal("setup table user error:", err)
+		}
+
+		logrus.Info("start create table friend_relationship if not exists.")
+		if _, err := db.Exec(friendTable); err != nil {
+			logrus.Fatal("setup table friend_relationship error:", err)
 		}
 
 		logrus.Info("try use utf8mb4")
@@ -108,6 +123,19 @@ func (dbs *DBService) Setup() {
 	})
 }
 
-func (dbs *DBService) Hello() {
-	fmt.Println("hello")
+// STMTFactory
+func (dbs *DBService) STMTFactory(predSQL string, db *sql.DB) *sql.Stmt {
+	stmt, err := db.Prepare(predSQL)
+	if err != nil {
+		logrus.Fatalf("prepare sql %s error: %s", predSQL, err.Error())
+	}
+	return stmt
 }
+
+// CheckEntityExist check if entity exists in db,
+// true exist or false not
+// func (dbs *DBService) CheckEntityExist(checkSQL string, entity interface{}) bool {
+// 	stmt := dbs.STMTFactory(checkSQL)
+// 	defer stmt.Close()
+
+// }
