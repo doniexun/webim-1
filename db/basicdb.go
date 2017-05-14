@@ -96,6 +96,18 @@ func (dbs *DBService) Setup() {
 		CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 	`
 
+	msgTable := `
+		CREATE TABLE IF NOT EXISTS ` + dbs.DBName + `.message (
+			id INT(64) NOT NULL AUTO_INCREMENT,
+			send_from VARCHAR(20) NOT NULL,
+			send_to VARCHAR(20) NOT NULL,
+			msg TEXT NOT NULL,
+			send_time DATE NOT NULL,
+			PRIMARY KEY (id)
+		)
+		CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+	`
+
 	onceSetupDB.Do(func() {
 		logrus.Info("start create db %s if not exists.", dbs.DBName)
 		if _, err := db.Exec(dbSchema); err != nil {
@@ -115,6 +127,11 @@ func (dbs *DBService) Setup() {
 		logrus.Info("start create table friend_relationship if not exists.")
 		if _, err := db.Exec(friendTable); err != nil {
 			logrus.Fatal("setup table friend_relationship error:", err)
+		}
+
+		logrus.Info("start create table message if not exists.")
+		if _, err := db.Exec(msgTable); err != nil {
+			logrus.Fatal("setup table message error:", err)
 		}
 
 		logrus.Info("try use utf8mb4")
