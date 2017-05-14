@@ -90,6 +90,7 @@ func (dbs *DBService) Setup() {
 			id INT(64) NOT NULL AUTO_INCREMENT,
 			fmin VARCHAR(20) NOT NULL,
 			fmax VARCHAR(20) NOT NULL,
+			added_time DATE NOT NULL,
 			PRIMARY KEY (id)
 		)
 		CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
