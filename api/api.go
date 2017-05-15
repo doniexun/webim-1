@@ -44,6 +44,7 @@ func WebIMAPI(port string, dbs *service.DBService) {
 		userAPI.POST("/login", UserLogin)
 		userAPI.POST("/register", UserRegister)
 		userAPI.POST("/logout", LoginOut)
+		userAPI.GET("/get", GetUserByName)
 	}
 
 	friendAPI := router.Group("/api/v1/friend")

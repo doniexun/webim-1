@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 
+	"fmt"
+
 	"github.com/Sirupsen/logrus"
 	"github.com/adolphlwq/webim/service"
 	"github.com/gin-contrib/sessions"
@@ -62,4 +64,28 @@ func LoginOut(c *gin.Context) {
 			"data":   "logout success"})
 		return
 	}
+}
+
+// GetUserByName
+func GetUserByName(c *gin.Context) {
+	username := c.Query("username")
+	fmt.Println(username)
+	if username == "" || len(username) == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"data":   ""})
+		return
+	}
+
+	user, err := im.GetUserByName(username)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 400,
+			"data":   err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"data":   *user})
 }
