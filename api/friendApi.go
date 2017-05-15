@@ -1,11 +1,8 @@
 package api
 
 import (
-	"webim/db"
-
-	"net/http"
-
 	"encoding/json"
+	"net/http"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-gonic/gin"

@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"webim/db"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/gin-contrib/sessions"

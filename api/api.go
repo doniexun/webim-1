@@ -4,9 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"webim/db"
-	"webim/service"
-
+	"github.com/adolphlwq/webim/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
