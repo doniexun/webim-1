@@ -13,16 +13,16 @@
 			"revisionTime": "2017-05-04T07:10:19Z"
 		},
 		{
-			"checksumSHA1": "V2n1MlC7C0A/viD0dN8t7UMv/sA=",
+			"checksumSHA1": "K8miS96WjrTCIrsS7KyawQC2wLE=",
 			"path": "github.com/adolphlwq/webim/api",
-			"revision": "2ea14ec61b2f867219ecd29aa8ae64d4783f9fea",
-			"revisionTime": "2017-05-15T14:37:21Z"
+			"revision": "e384093ec6285c1b6a7b69e7e309f6737f1fecc4",
+			"revisionTime": "2017-05-15T16:01:27Z"
 		},
 		{
-			"checksumSHA1": "swDzPKZbrXi3wC+aC9w/uEm/du0=",
+			"checksumSHA1": "6ffIF3wQ07oimwaauJlwSjzWE3M=",
 			"path": "github.com/adolphlwq/webim/service",
-			"revision": "8721f7147005d6abd49c82e4fa8a4b191b7ba22e",
-			"revisionTime": "2017-05-15T14:32:20Z"
+			"revision": "5945a136eb4ea1b766434c1a4014d8435a08c0d1",
+			"revisionTime": "2017-05-15T16:00:04Z"
 		},
 		{
 			"path": "github.com/boj/redistore",

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/adolphlwq/webim/api"
+	"github.com/adolphlwq/webim/service"
 )
 
 var (
@@ -26,6 +27,6 @@ func main() {
 	flag.Parse()
 
 	logrus.Info("Start init DB")
-	dbs := db.NewDB(dbname, user, pass, address, dbport)
+	dbs := service.NewDB(dbname, user, pass, address, dbport)
 	api.WebIMAPI(":"+serviceport, dbs)
 }
