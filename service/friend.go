@@ -9,7 +9,7 @@ import (
 )
 
 // AddFriend handle add friend
-func (im *IMService) AddFriend(friend db.AddFriend) error {
+func (im *IMService) AddFriend(friend AddFriend) error {
 	// check each username validate
 	if isExist := im.CheckUser(friend.FriendMin); !isExist {
 		return fmt.Errorf("user %s does not exist", friend.FriendMin)
@@ -19,7 +19,7 @@ func (im *IMService) AddFriend(friend db.AddFriend) error {
 	}
 
 	// check if friend pair exist
-	if isExist := im.dbs.CheckFriendExist(friend); isExist {
+	if isExist := im.CheckFriendExist(friend); isExist {
 		return fmt.Errorf("friend relationship exists")
 	}
 

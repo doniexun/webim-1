@@ -2,10 +2,9 @@ package main
 
 import (
 	"flag"
-	"webim/api"
-	"webim/db"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/adolphlwq/webim/api"
 )
 
 var (
