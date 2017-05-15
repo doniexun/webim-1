@@ -3,7 +3,6 @@ package service
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/Sirupsen/logrus"
 	"golang.org/x/crypto/scrypt"
@@ -146,7 +145,7 @@ func (im *IMService) InsertUser(username, encryptpass string) error {
 		"password=?, created_time=?", db)
 	defer stmt.Close()
 
-	res, err := stmt.Exec(username, encryptpass, time.Now())
+	res, err := stmt.Exec(username, encryptpass, GetTimestamp())
 	if err != nil {
 		logrus.Warn("insert username and password to db error: ", err)
 		return fmt.Errorf("register user error, please try again")
@@ -170,4 +169,26 @@ func (us *IMService) encryptPass(password string) string {
 	}
 
 	return string(dk)
+}
+
+// GetUserByName
+func (im *IMService) GetUserByName(username string) (*User, error) {
+	db := im.dbs.CreateDB()
+	defer db.Close()
+
+	userSQL := "SELECT id, username, created_time FROM user WHERE username=?;"
+	stmt := im.dbs.STMTFactory(userSQL, db)
+	defer stmt.Close()
+
+	var user User
+	err := stmt.QueryRow(username).Scan(&user.ID, &user.Username, &user.CreatedTime)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("%s does not exist")
+		} else {
+			return nil, fmt.Errorf("get user error, please try later")
+		}
+	}
+
+	return &user, nil
 }
