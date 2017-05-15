@@ -4,10 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
-	"webim/db"
 
 	"github.com/Sirupsen/logrus"
-
 	"golang.org/x/crypto/scrypt"
 )
 
@@ -16,10 +14,10 @@ const (
 )
 
 type IMService struct {
-	dbs *db.DBService
+	dbs *DBService
 }
 
-func NewIMService(dbs *db.DBService) *IMService {
+func NewIMService(dbs *DBService) *IMService {
 	im := &IMService{
 		dbs: dbs,
 	}
