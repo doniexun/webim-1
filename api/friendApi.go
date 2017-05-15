@@ -16,7 +16,7 @@ func AddFriend(c *gin.Context) {
 	var fpair db.AddFriend
 	c.BindJSON(&fpair)
 
-	err := us.AddFriend(fpair)
+	err := im.AddFriend(fpair)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": 400, "data": err.Error()})
 	} else {
@@ -27,7 +27,7 @@ func AddFriend(c *gin.Context) {
 // ListFriend list all friends of one user
 func ListFriend(c *gin.Context) {
 	username := c.Query("username")
-	friendList, err := us.ListFriend(username)
+	friendList, err := im.ListFriend(username)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 400,
