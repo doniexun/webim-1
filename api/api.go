@@ -15,7 +15,7 @@ var (
 )
 
 // WebIMAPI main api endpoint for webim
-func WebIMAPI(port string, dbs *db.DBService) {
+func WebIMAPI(port string, dbs *service.DBService) {
 	router := gin.Default()
 	im = service.NewIMService(dbs)
 
