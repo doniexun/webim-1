@@ -186,6 +186,7 @@ func (im *IMService) GetUserByName(username string) (*User, error) {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("%s does not exist")
 		} else {
+			logrus.Warnf("select user %s error: %v", username, err)
 			return nil, fmt.Errorf("get user error, please try later")
 		}
 	}

@@ -79,7 +79,7 @@ func (dbs *DBService) Setup() {
 			id INT(64) NOT NULL AUTO_INCREMENT,
 			username VARCHAR(20) NOT NULL,
 			password VARBINARY(32) NOT NULL,
-			created_time DATE NOT NULL,
+			created_time INT(64) NOT NULL,
 			PRIMARY KEY (id)
 		)
 		CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -90,7 +90,7 @@ func (dbs *DBService) Setup() {
 			id INT(64) NOT NULL AUTO_INCREMENT,
 			fmin VARCHAR(20) NOT NULL,
 			fmax VARCHAR(20) NOT NULL,
-			added_time DATE NOT NULL,
+			added_time INT(64) NOT NULL,
 			PRIMARY KEY (id)
 		)
 		CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -102,7 +102,7 @@ func (dbs *DBService) Setup() {
 			send_from VARCHAR(20) NOT NULL,
 			send_to VARCHAR(20) NOT NULL,
 			msg TEXT NOT NULL,
-			send_time DATE NOT NULL,
+			send_time INT(64) NOT NULL,
 			PRIMARY KEY (id)
 		)
 		CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

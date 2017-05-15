@@ -6,10 +6,10 @@ import (
 
 // User entity
 type User struct {
-	ID          uint64    `json:"id"`
-	Username    string    `json:"username"`
-	Password    string    `json:"password"`
-	CreatedTime time.Time `json:"created_time"`
+	ID          uint64 `json:"id"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	CreatedTime int64  `json:"created_time"`
 }
 
 type AddFriend struct {

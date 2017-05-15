@@ -3,7 +3,6 @@ package service
 import (
 	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/Sirupsen/logrus"
 )
@@ -32,7 +31,7 @@ func (im *IMService) AddFriend(friend AddFriend) error {
 	stmt := im.dbs.STMTFactory(preSQL, db)
 	defer stmt.Close()
 
-	res, err := stmt.Exec(friend.FriendMin, friend.FriendMax, time.Now())
+	res, err := stmt.Exec(friend.FriendMin, friend.FriendMax, GetTimestamp())
 	if err != nil {
 		logrus.Warnf("insert friend relationship between %s and %s error %s",
 			friend.FriendMin, friend.FriendMax, err.Error())
