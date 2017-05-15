@@ -5,12 +5,13 @@ import (
 	"net/http"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/adolphlwq/webim/service"
 	"github.com/gin-gonic/gin"
 )
 
 // AddFriend add friend pair to db
 func AddFriend(c *gin.Context) {
-	var fpair db.AddFriend
+	var fpair service.AddFriend
 	c.BindJSON(&fpair)
 
 	err := im.AddFriend(fpair)

@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/adolphlwq/webim/service"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
 // UserRegister handle user register
 func UserRegister(c *gin.Context) {
-	var user db.User
+	var user service.User
 	c.BindJSON(&user)
 
 	err := im.UserRegister(user.Username, user.Password)
@@ -25,7 +26,7 @@ func UserRegister(c *gin.Context) {
 
 // UserLogin handle user login
 func UserLogin(c *gin.Context) {
-	var user db.User
+	var user service.User
 	c.BindJSON(&user)
 
 	err := im.UserLogin(user.Username, user.Password)
@@ -43,7 +44,7 @@ func UserLogin(c *gin.Context) {
 
 // LoginOut handle logout
 func LoginOut(c *gin.Context) {
-	var user db.User
+	var user service.User
 	c.BindJSON(&user)
 
 	session := sessions.Default(c)
