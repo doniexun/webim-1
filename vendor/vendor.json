@@ -13,18 +13,6 @@
 			"revisionTime": "2017-05-04T07:10:19Z"
 		},
 		{
-			"checksumSHA1": "K8miS96WjrTCIrsS7KyawQC2wLE=",
-			"path": "github.com/adolphlwq/webim/api",
-			"revision": "e384093ec6285c1b6a7b69e7e309f6737f1fecc4",
-			"revisionTime": "2017-05-15T16:01:27Z"
-		},
-		{
-			"checksumSHA1": "6ffIF3wQ07oimwaauJlwSjzWE3M=",
-			"path": "github.com/adolphlwq/webim/service",
-			"revision": "5945a136eb4ea1b766434c1a4014d8435a08c0d1",
-			"revisionTime": "2017-05-15T16:00:04Z"
-		},
-		{
 			"path": "github.com/boj/redistore",
 			"revision": ""
 		},
@@ -131,5 +119,5 @@
 			"revision": ""
 		}
 	],
-	"rootPath": "webim"
+	"rootPath": "github.com/adolphlwq/webim"
 }

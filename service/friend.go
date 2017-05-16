@@ -8,7 +8,7 @@ import (
 )
 
 // AddFriend handle add friend
-func (im *IMService) AddFriend(friend AddFriend) error {
+func (im *IMService) AddFriendRelationship(friend FriendRelationship) error {
 	// check each username validate
 	if isExist := im.CheckUser(friend.FriendMin); !isExist {
 		return fmt.Errorf("user %s does not exist", friend.FriendMin)
@@ -18,37 +18,56 @@ func (im *IMService) AddFriend(friend AddFriend) error {
 	}
 
 	// check if friend pair exist
-	if isExist := im.CheckFriendExist(friend); isExist {
-		return fmt.Errorf("friend relationship exists")
+	if isExist := im.CheckFriendRelationshipExist(friend); isExist {
+		// check friend relationship state
+		if isActive := im.CheckFriendRelationshipState(friend); isActive {
+			return fmt.Errorf("friend relationship exists")
+		}
+
+		// activate relationship
+		db := im.dbs.CreateDB()
+		defer db.Close()
+		activeSQL := `UPDATE friend_relationship SET state="active" 
+		WHERE fmin=? and fmax=?;`
+		stmt := im.dbs.STMTFactory(activeSQL, db)
+		defer stmt.Close()
+
+		_, err := stmt.Exec(friend.FriendMin, friend.FriendMax)
+		if err != nil {
+			logrus.Warnf("active friend relationship between %s and %s error: %v",
+				friend.FriendMin, friend.FriendMax, err)
+			return fmt.Errorf("add friend error, please try later")
+		}
+		return nil
+	} else {
+		db := im.dbs.CreateDB()
+		defer db.Close()
+		preSQL := `
+			INSERT INTO friend_relationship SET fmin=?,
+			fmax=?,added_time=?,state=?;
+		`
+		stmt := im.dbs.STMTFactory(preSQL, db)
+		defer stmt.Close()
+
+		res, err := stmt.Exec(friend.FriendMin, friend.FriendMax, GetTimestamp(), "active")
+		if err != nil {
+			logrus.Warnf("insert friend relationship between %s and %s error %s",
+				friend.FriendMin, friend.FriendMax, err.Error())
+			return err
+		}
+
+		_, err = res.RowsAffected()
+		if err != nil {
+			logrus.Fatal("get affected lines from restult error: ", err)
+		}
+
+		return nil
 	}
-
-	db := im.dbs.CreateDB()
-	defer db.Close()
-	preSQL := `
-		INSERT INTO friend_relationship SET fmin=?,
-		fmax=?,added_time=?
-	`
-	stmt := im.dbs.STMTFactory(preSQL, db)
-	defer stmt.Close()
-
-	res, err := stmt.Exec(friend.FriendMin, friend.FriendMax, GetTimestamp())
-	if err != nil {
-		logrus.Warnf("insert friend relationship between %s and %s error %s",
-			friend.FriendMin, friend.FriendMax, err.Error())
-		return err
-	}
-
-	_, err = res.RowsAffected()
-	if err != nil {
-		logrus.Fatal("get affected lines from restult error: ", err)
-	}
-
-	return nil
 }
 
-// CheckFriendExist check if friend relationship exists in db
+// CheckFriendRelationshipExist check if friend relationship exists in db
 // true exist false or not
-func (im *IMService) CheckFriendExist(friend AddFriend) bool {
+func (im *IMService) CheckFriendRelationshipExist(friend FriendRelationship) bool {
 	checkSQL := `
 		SELECT id FROM friend_relationship WHERE fmin=? 
 		AND fmax=?;
@@ -64,7 +83,7 @@ func (im *IMService) CheckFriendExist(friend AddFriend) bool {
 		if err == sql.ErrNoRows {
 			return false
 		} else {
-			logrus.Fatalf("query friend relationship between %s and %s error %s ",
+			logrus.Fatalf("query friend relationship between %s and %s error: %s ",
 				friend.FriendMin, friend.FriendMax, err.Error())
 		}
 	}
@@ -72,9 +91,54 @@ func (im *IMService) CheckFriendExist(friend AddFriend) bool {
 	return true
 }
 
-// ListFriend return all friends of username
-func (im *IMService) ListFriend(username string) (*[]string, error) {
-	listSQL := `SELECT fmin, fmax FROM friend_relationship WHERE 
+// CheckFriendRelationshipState assume friend relationship has existed, this method check
+// relationship state, true "active" false "inactive"
+func (im *IMService) CheckFriendRelationshipState(friend FriendRelationship) bool {
+	db := im.dbs.CreateDB()
+	defer db.Close()
+
+	checkStateSQL := `SELECT state FROM friend_relationship WHERE fmin=? AND fmax=?;`
+	stmt := im.dbs.STMTFactory(checkStateSQL, db)
+	defer stmt.Close()
+
+	var state string
+	err := stmt.QueryRow(friend.FriendMin, friend.FriendMax).Scan(&state)
+	if err != nil {
+		logrus.Fatalf("query friend relationship state between %s and %s error: %s ",
+			friend.FriendMin, friend.FriendMax, err.Error())
+	}
+
+	if state == "active" {
+		return true
+	} else {
+		return false
+	}
+}
+
+// DeleteFriendRelationship delete friend relationship,change relationship state
+// from "active" to "inactive"
+func (im *IMService) DeleteFriendRelationship(friend FriendRelationship) error {
+	db := im.dbs.CreateDB()
+	defer db.Close()
+
+	deleteSQL := `UPDATE friend_relationship SET state="inactive" 
+		WHERE fmin=? and fmax=?;`
+	stmt := im.dbs.STMTFactory(deleteSQL, db)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(friend.FriendMin, friend.FriendMax)
+	if err != nil {
+		logrus.Warnf("update friend relationship between %s and %s error: %v",
+			friend.FriendMin, friend.FriendMax, err)
+		return err
+	}
+
+	return nil
+}
+
+// ListFriendRelationship return all friends of username
+func (im *IMService) ListFriendRelationship(username string) (*[]string, error) {
+	listSQL := `SELECT fmin, fmax, state FROM friend_relationship WHERE 
 		fmin=? OR fmax=?;`
 	db := im.dbs.CreateDB()
 	defer db.Close()
@@ -91,17 +155,20 @@ func (im *IMService) ListFriend(username string) (*[]string, error) {
 	var friendList []string
 	for rows.Next() {
 		var (
-			fmin string
-			fmax string
+			fmin  string
+			fmax  string
+			state string
 		)
-		if err := rows.Scan(&fmin, &fmax); err != nil {
+		if err := rows.Scan(&fmin, &fmax, &state); err != nil {
 			logrus.Warnf("query friends error: %s", err.Error())
 			return &[]string{""}, fmt.Errorf("get all friends of user %s error", username)
 		}
-		if fmin == username {
-			friendList = append(friendList, fmax)
-		} else {
-			friendList = append(friendList, fmin)
+		if state == "active" {
+			if fmin == username {
+				friendList = append(friendList, fmax)
+			} else {
+				friendList = append(friendList, fmin)
+			}
 		}
 	}
 

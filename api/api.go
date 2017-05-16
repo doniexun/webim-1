@@ -25,7 +25,7 @@ func WebIMAPI(port string, dbs *service.DBService) {
 	// use cors
 	router.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"http://tinyurl.api.adolphlwq.xyz"},
-		AllowMethods: []string{"*"},
+		AllowMethods: []string{"PUT", "GET", "POST"},
 		AllowHeaders: []string{"Content-Type"},
 		ExposeHeaders: []string{"Content-Length", "Access-Control-Allow-Origin",
 			"Access-Control-Allow-Headers", "Access-Control-Allow-Methods"},
@@ -49,8 +49,9 @@ func WebIMAPI(port string, dbs *service.DBService) {
 
 	friendAPI := router.Group("/api/v1/friend")
 	{
-		friendAPI.POST("/add", AddFriend)
-		friendAPI.GET("/list", ListFriend)
+		friendAPI.POST("/add", AddFriendRelationship)
+		friendAPI.GET("/list", ListFriendRelationship)
+		friendAPI.PUT("/delete", DeleteFriendRelationship)
 	}
 
 	router.Run(port)

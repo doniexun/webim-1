@@ -91,6 +91,7 @@ func (dbs *DBService) Setup() {
 			fmin VARCHAR(20) NOT NULL,
 			fmax VARCHAR(20) NOT NULL,
 			added_time INT(64) NOT NULL,
+			state VARCHAR(10) NOT NULL,
 			PRIMARY KEY (id)
 		)
 		CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -99,8 +100,8 @@ func (dbs *DBService) Setup() {
 	msgTable := `
 		CREATE TABLE IF NOT EXISTS ` + dbs.DBName + `.message (
 			id INT(64) NOT NULL AUTO_INCREMENT,
-			send_from VARCHAR(20) NOT NULL,
-			send_to VARCHAR(20) NOT NULL,
+			sender VARCHAR(20) NOT NULL,
+			receiver VARCHAR(20) NOT NULL,
 			msg TEXT NOT NULL,
 			send_time INT(64) NOT NULL,
 			PRIMARY KEY (id)
