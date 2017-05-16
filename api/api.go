@@ -54,6 +54,10 @@ func WebIMAPI(port string, dbs *service.DBService) {
 		friendAPI.PUT("/delete", DeleteFriendRelationship)
 	}
 
+	messageAPI := router.Group("/api/v1/message")
+	{
+		messageAPI.GET("/unread", GetUnreadMsg)
+	}
 	router.Run(port)
 }
 
@@ -76,4 +80,11 @@ func Incr(c *gin.Context) {
 // HealthCheck return "health" if everything is OK
 func HealthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": "health"})
+}
+
+// CheckUserLogin check if user login by checking if username in session.
+// true login false or not.
+func CheckUserLogin(username *string, session sessions.Session) bool {
+	v := session.Get(*username)
+	return v != nil
 }

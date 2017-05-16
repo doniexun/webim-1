@@ -104,6 +104,7 @@ func (dbs *DBService) Setup() {
 			receiver VARCHAR(20) NOT NULL,
 			msg TEXT NOT NULL,
 			send_time INT(64) NOT NULL,
+			state VARCHAR(10) NOT NULL,
 			PRIMARY KEY (id)
 		)
 		CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

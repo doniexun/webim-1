@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	"strings"
+
 	"github.com/Sirupsen/logrus"
 )
 
@@ -173,4 +175,19 @@ func (im *IMService) ListFriendRelationship(username string) (*[]string, error) 
 	}
 
 	return &friendList, nil
+}
+
+// FormatFriend return fmin and fmax where fmin<fmax
+func (im *IMService) FormatFriend(f1, f2 string) (string, string) {
+	var fmin, fmax string
+	ret := strings.Compare(f1, f2)
+	if ret < 0 {
+		fmin = f1
+		fmax = f2
+	} else {
+		fmin = f2
+		fmax = f1
+	}
+
+	return fmin, fmax
 }

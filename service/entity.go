@@ -25,6 +25,6 @@ type Message struct {
 	Sender   string `json:"sender"`
 	Receiver string `json:"receiver"`
 	Msg      string `json:"msg"`
-	State    string `json:"state"`
 	SendTime uint64 `json:"send_time"`
+	State    string `json:"state"`
 }
