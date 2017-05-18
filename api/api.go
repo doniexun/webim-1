@@ -11,16 +11,20 @@ import (
 )
 
 var (
-	im *service.IMService
+	im      *service.IMService
+	session sessions.Session
 )
 
 // WebIMAPI main api endpoint for webim
-func WebIMAPI(port string, dbs *service.DBService) {
+func WebIMAPI(serviceUrl string, dbs *service.DBService) {
 	router := gin.Default()
 	im = service.NewIMService(dbs)
 
 	// use session
 	store := sessions.NewCookieStore([]byte("secret"))
+	store.Options(sessions.Options{
+		MaxAge: 30 * 60, //30mins
+	})
 	router.Use(sessions.Sessions("webim-session", store))
 	// use cors
 	router.Use(cors.New(cors.Config{
@@ -38,6 +42,7 @@ func WebIMAPI(port string, dbs *service.DBService) {
 
 	router.GET("/health", HealthCheck)
 	router.GET("/incr", Incr)
+	router.GET("/incr2", Incr2)
 
 	userAPI := router.Group("/api/v1/user")
 	{
@@ -57,8 +62,11 @@ func WebIMAPI(port string, dbs *service.DBService) {
 	messageAPI := router.Group("/api/v1/message")
 	{
 		messageAPI.GET("/unread", GetUnreadMsg)
+		// add username(id) to path is inspired
+		// my deep thinking and https://github.com/gin-gonic/gin/issues/461
+		messageAPI.GET("/ws/:username", WSMsgHandler)
 	}
-	router.Run(port)
+	router.Run(serviceUrl)
 }
 
 // Incr
@@ -77,14 +85,20 @@ func Incr(c *gin.Context) {
 	c.JSON(200, gin.H{"count": count})
 }
 
+// Incr2
+func Incr2(c *gin.Context) {
+	var count int
+	session := sessions.Default(c)
+	v := session.Get("count")
+	if v == nil {
+		count = 0
+	} else {
+		count = v.(int)
+	}
+	c.JSON(200, gin.H{"count": count})
+}
+
 // HealthCheck return "health" if everything is OK
 func HealthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": "health"})
-}
-
-// CheckUserLogin check if user login by checking if username in session.
-// true login false or not.
-func CheckUserLogin(username *string, session sessions.Session) bool {
-	v := session.Get(*username)
-	return v != nil
 }

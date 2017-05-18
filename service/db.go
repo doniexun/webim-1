@@ -99,7 +99,7 @@ func (dbs *DBService) Setup() {
 
 	msgTable := `
 		CREATE TABLE IF NOT EXISTS ` + dbs.DBName + `.message (
-			id INT(64) NOT NULL AUTO_INCREMENT,
+			id INT(64) NOT NULL,
 			sender VARCHAR(20) NOT NULL,
 			receiver VARCHAR(20) NOT NULL,
 			msg TEXT NOT NULL,

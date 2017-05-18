@@ -1,0 +1,6 @@
+FROM scratch 
+#FROM alpine:3.4 
+MAINTAINER Luke kenan3015@gmail.com
+
+ENV FRESHED_AT 2017-05-18
+ADD webim /webim

@@ -1,34 +1,48 @@
 # webim
 
-A study project of Golang,this is the webim Golang backend program.For front end just go to [webimfe](https://github.com/adolphlwq/webimfe).
+A web instant message(im) service written by Golang,this is the backend program.For front end just go to [webimfe](https://github.com/adolphlwq/webimfe).
+
+## Requisites
+- Golang
+- Mysql
+- Node
+- Docker
+- docker-compose
 
 ## Quick start
-TODOs
+```
+git clone https://github.com/adolphlwq/webim
+docker-compose up -d
+```
 
-## TODOs(zh)
-- [X] 注册和登录
-    - [X] 登录（username唯一id）
-    - [X] 注册
-- [ ] 联系人页面
-    - [X] 显示**自己所有的联系人**
-        - [X] 显示对方id
-        - [ ] 显示未读私信数量提醒
+Then browse [localhost:8080](localhost:8080)
+
+## TODOs
+- [ ] test case
+- [ ] improve auth and session logic
+    - [ ] map websocket to user
+- [X] auth(login and register)
+    - [X] login
+    - [X] register
+- [ ] contacts 
+    - [X] list **all contacts of you**
+        - [X] id
+        - [ ] list messafes unread
             - [X] API
-            - [ ] 前端渲染
-    - [X] 通过id添加新联系人（不需要对方同意）
-    - [X] 删除某个联系人
-        - [X] 删除联系人
-        - [X] 保留与删除用户的消息等数据
-        - [X] 再次添加被删除联系人时，消息等数据都还在
-- [ ] 聊天
-    - [X] 点击一个联系人会进入聊天界面
-    - [ ] 点击联系人进入聊天界面，未读消息置为 0
-    - [ ] 查看某个用户的历史消息
-    - [X] 收发私信（实时）
-    - [ ] 删除自己发的消息
-- [ ] 部署
+            - [ ] front end render
+    - [X] add new contact by id
+    - [X] delete contact
+        - [X] delete
+        - [X] reserve messages for add contact again
+- [ ] **chat**
+    - [X] into chat page when click a contact of contact list
+    - [ ] unread set to zero
+    - [ ] see history messages
+    - [X] send and receiver message(real time if both are online)
+    - [ ] delete messages
+- [X] deploy
     - [X] server
-    - [ ] docker-compose
+    - [X] [docker-compose0(/docker-compose.yaml)
 
 ## APIs
 - login
@@ -106,9 +120,56 @@ GET    /api/v1/message/unread?receiver=test2
 GET    /api/v1/message/ws/:username
 ```
 
-## Features
-- 初始化系统后消息ID自动和数据库中最新值同步
-- 用户退出要清理websocket.
+## Architecture design
+### backend directory
+```
+.
+├── api
+│   ├── api.go
+│   ├── friendApi.go
+│   ├── messageApi.go
+│   └── userApi.go
+├── docker-compose.yaml
+├── Dockerfile.dev
+├── LICENSE
+├── Makefile
+├── README.md
+├── service
+│   ├── db.go
+│   ├── entity.go
+│   ├── friend.go
+│   ├── im.go
+│   ├── message.go
+│   └── user.go
+├── vendor
+│   ├── appengine
+│   ├── github.com
+│   ├── golang.org
+│   └── vendor.json
+└── webim.go
+```
+
+### chat logic design
+1. messages are saved to db(mysql)
+2. set `state` to each message
+3. three main situations when chat：
+  - both are offline
+  - both are online(use websocket)
+  - one is online and the other offline(cache messages)
+
+#### both online
+```
+        send message                  1. transfer msg to receiver by websocket
+sender --------------> ChatServer -------------------------------------------> receiver 
+        `msg_send`                 2. save msg to db with state `msg_done`
+```
+
+#### only one online
+```
+        send message                 1. save msg to db with state `msg_cache`
+sender --------------> ChatServer -------------------------------------------> receiver (`offline`)
+        `msg_send`                 
+```
 
 ## Reference
 - [使用Golang scrypt包加密后存储MySQL编码问题](http://stackoverflow.com/questions/8291184/mysql-general-error-1366-incorrect-string-value?rq=1)...(Error 1366: Incorrect string value: '\xC9c\x8B~\xB9\xA0...' for column 'password')

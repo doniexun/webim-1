@@ -5,23 +5,13 @@ import (
 	"fmt"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/gin-contrib/sessions"
 	"golang.org/x/crypto/scrypt"
 )
 
 const (
 	PASS_SALT = "AES$%x09^@s!d:<X"
 )
-
-type IMService struct {
-	dbs *DBService
-}
-
-func NewIMService(dbs *DBService) *IMService {
-	im := &IMService{
-		dbs: dbs,
-	}
-	return im
-}
 
 // UserLogin
 func (im *IMService) UserLogin(username, password string) error {
@@ -192,4 +182,11 @@ func (im *IMService) GetUserByName(username string) (*User, error) {
 	}
 
 	return &user, nil
+}
+
+// CheckUserBySession check if user login by session.
+// true login false or not.
+func (im *IMService) CheckUserBySession(username string, sess sessions.Session) bool {
+	v := sess.Get(&username)
+	return v != nil
 }
