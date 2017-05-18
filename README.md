@@ -159,17 +159,18 @@ GET    /api/v1/message/ws/:username
   - 一方在线，一方不在线（缓存信息）
 
 #### 都在线
-
+```
           发送消息                  1. transfer msg to receiver by websocket
 sender --------------> ChatServer -------------------------------------------> receiver 
         `msg_send`                 2. save msg to db with state `msg_done`
+```
 
 #### 只有一方在线
-
+```
           发送消息                  1. save msg to db with state `msg_cache`
 sender --------------> ChatServer -------------------------------------------> receiver (`offline`)
         `msg_send`                 
-
+```
 
 ## Features
 - 初始化系统后消息ID自动和数据库中最新值同步
