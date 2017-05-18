@@ -152,7 +152,7 @@ func (im *IMService) GetMaxMsgID() uint64 {
 	stmt := im.dbs.STMTFactory(rSQL, db)
 	defer stmt.Close()
 
-	var tmpID uint64
+	var tmpID interface{}
 	err := stmt.QueryRow().Scan(&tmpID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -161,7 +161,10 @@ func (im *IMService) GetMaxMsgID() uint64 {
 		logrus.Fatalf("get max id from message error: %v", err)
 	}
 
-	return tmpID
+	if tmpID == nil {
+		return 0
+	}
+	return tmpID.(uint64)
 }
 
 // UpdateMsgListState update msg arrays state

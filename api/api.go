@@ -11,7 +11,8 @@ import (
 )
 
 var (
-	im *service.IMService
+	im      *service.IMService
+	session sessions.Session
 )
 
 // WebIMAPI main api endpoint for webim
@@ -21,6 +22,9 @@ func WebIMAPI(serviceUrl string, dbs *service.DBService) {
 
 	// use session
 	store := sessions.NewCookieStore([]byte("secret"))
+	store.Options(sessions.Options{
+		MaxAge: 30 * 60, //30mins
+	})
 	router.Use(sessions.Sessions("webim-session", store))
 	// use cors
 	router.Use(cors.New(cors.Config{
@@ -38,6 +42,7 @@ func WebIMAPI(serviceUrl string, dbs *service.DBService) {
 
 	router.GET("/health", HealthCheck)
 	router.GET("/incr", Incr)
+	router.GET("/incr2", Incr2)
 
 	userAPI := router.Group("/api/v1/user")
 	{
@@ -77,6 +82,19 @@ func Incr(c *gin.Context) {
 	}
 	session.Set("count", count)
 	session.Save()
+	c.JSON(200, gin.H{"count": count})
+}
+
+// Incr2
+func Incr2(c *gin.Context) {
+	var count int
+	session := sessions.Default(c)
+	v := session.Get("count")
+	if v == nil {
+		count = 0
+	} else {
+		count = v.(int)
+	}
 	c.JSON(200, gin.H{"count": count})
 }
 

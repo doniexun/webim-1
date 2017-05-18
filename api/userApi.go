@@ -31,12 +31,14 @@ func UserLogin(c *gin.Context) {
 	c.BindJSON(&user)
 
 	err := im.UserLogin(user.Username, user.Password)
+	logrus.Infof("err when login is: %v", err)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"status": 400, "data": err.Error()})
 	} else {
 		// handle session
 		session := sessions.Default(c)
 		session.Set(user.Username, user.Username)
+		logrus.Infof("register %s to session", session.Get(user.Username))
 		c.JSON(http.StatusOK, gin.H{
 			"status": http.StatusOK,
 			"data":   user.Username})
@@ -68,6 +70,9 @@ func LoginOut(c *gin.Context) {
 	}(im, user.Username)
 
 	session := sessions.Default(c)
+	logrus.Infof("session is: ", session)
+	logrus.Infof("session is: ", session.Get("webim-session"))
+	logrus.Infof("user is :%s", session.Get(user.Username))
 	username := session.Get(user.Username)
 	if username == nil {
 		c.JSON(http.StatusOK, gin.H{

@@ -1,0 +1,24 @@
+version: '2'
+services:
+  mysql5.7:
+    image: "adolphlwq/mysql:5.7-lls"
+    network_mode: "host"
+    volumes:
+      - /tmp/webim/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootLu
+  webimbe:
+    image: "adolphlwq/webim:lls"
+    network_mode: "host"
+    depends_on:
+      - mysql5.7
+    # links:
+    #   - mysql5.7:mysql
+    command: "./webim -dbname testwebim -user root -pass rootLu -dbport 3306"
+  webimfe:
+    image: "adolphlwq/webimfe:lls"
+    network_mode: "host"
+    # links:
+    #   - webimbe:webimbe
+    # ports:
+    #   - "8989:8080"
