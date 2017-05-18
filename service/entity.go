@@ -28,3 +28,9 @@ type Message struct {
 	SendTime uint64 `json:"send_time"`
 	State    string `json:"state"`
 }
+
+// WSMessage manage messages on websocket
+type WSMessage struct {
+	Username string  `json:"username"`
+	chatMsg  Message `json:"chat_msg"`
+}

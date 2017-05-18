@@ -15,7 +15,7 @@ var (
 )
 
 // WebIMAPI main api endpoint for webim
-func WebIMAPI(port string, dbs *service.DBService) {
+func WebIMAPI(serviceUrl string, dbs *service.DBService) {
 	router := gin.Default()
 	im = service.NewIMService(dbs)
 
@@ -57,8 +57,11 @@ func WebIMAPI(port string, dbs *service.DBService) {
 	messageAPI := router.Group("/api/v1/message")
 	{
 		messageAPI.GET("/unread", GetUnreadMsg)
+		// add username(id) to path is inspired
+		// my deep thinking and https://github.com/gin-gonic/gin/issues/461
+		messageAPI.GET("/ws/:username", WSMsgHandler)
 	}
-	router.Run(port)
+	router.Run(serviceUrl)
 }
 
 // Incr
@@ -80,11 +83,4 @@ func Incr(c *gin.Context) {
 // HealthCheck return "health" if everything is OK
 func HealthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": "health"})
-}
-
-// CheckUserLogin check if user login by checking if username in session.
-// true login false or not.
-func CheckUserLogin(username *string, session sessions.Session) bool {
-	v := session.Get(*username)
-	return v != nil
 }

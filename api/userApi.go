@@ -1,9 +1,8 @@
 package api
 
 import (
-	"net/http"
-
 	"fmt"
+	"net/http"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/adolphlwq/webim/service"
@@ -49,20 +48,39 @@ func LoginOut(c *gin.Context) {
 	var user service.User
 	c.BindJSON(&user)
 
+	if user.Username == "" {
+		c.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+	logrus.Infof("user to logout is %v", user)
+
+	// TODO clean user websocket
+	// isWS true user has websocket false or not
+	go func(im *service.IMService, username string) {
+		if isWS := im.UserWSMap.HasKey(username); isWS {
+			ws := im.UserWSMap.Get(username)
+			err := ws.Close()
+			if err != nil {
+				logrus.Fatalf("close websocket error: %v", err)
+			}
+			im.UserWSMap.Delete(username)
+		}
+	}(im, user.Username)
+
 	session := sessions.Default(c)
 	username := session.Get(user.Username)
 	if username == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 200,
 			"data":   "logout success"})
-		return
+		logrus.Info("username is nil, return directly")
 	} else {
 		session.Delete(user.Username)
 		session.Save()
 		c.JSON(http.StatusOK, gin.H{
 			"status": 200,
 			"data":   "logout success"})
-		return
+		logrus.Info("remove username in session, return directly")
 	}
 }
 

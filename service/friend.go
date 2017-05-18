@@ -3,13 +3,12 @@ package service
 import (
 	"database/sql"
 	"fmt"
-
 	"strings"
 
 	"github.com/Sirupsen/logrus"
 )
 
-// AddFriend handle add friend
+// AddFriendRelationship handle add friend
 func (im *IMService) AddFriendRelationship(friend FriendRelationship) error {
 	// check each username validate
 	if isExist := im.CheckUser(friend.FriendMin); !isExist {
@@ -41,30 +40,30 @@ func (im *IMService) AddFriendRelationship(friend FriendRelationship) error {
 			return fmt.Errorf("add friend error, please try later")
 		}
 		return nil
-	} else {
-		db := im.dbs.CreateDB()
-		defer db.Close()
-		preSQL := `
-			INSERT INTO friend_relationship SET fmin=?,
-			fmax=?,added_time=?,state=?;
-		`
-		stmt := im.dbs.STMTFactory(preSQL, db)
-		defer stmt.Close()
-
-		res, err := stmt.Exec(friend.FriendMin, friend.FriendMax, GetTimestamp(), "active")
-		if err != nil {
-			logrus.Warnf("insert friend relationship between %s and %s error %s",
-				friend.FriendMin, friend.FriendMax, err.Error())
-			return err
-		}
-
-		_, err = res.RowsAffected()
-		if err != nil {
-			logrus.Fatal("get affected lines from restult error: ", err)
-		}
-
-		return nil
 	}
+
+	db := im.dbs.CreateDB()
+	defer db.Close()
+	preSQL := `
+		INSERT INTO friend_relationship SET fmin=?,
+		fmax=?,added_time=?,state=?;
+	`
+	stmt := im.dbs.STMTFactory(preSQL, db)
+	defer stmt.Close()
+
+	res, err := stmt.Exec(friend.FriendMin, friend.FriendMax, GetTimestamp(), "active")
+	if err != nil {
+		logrus.Warnf("insert friend relationship between %s and %s error %s",
+			friend.FriendMin, friend.FriendMax, err.Error())
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		logrus.Fatal("get affected lines from restult error: ", err)
+	}
+
+	return nil
 }
 
 // CheckFriendRelationshipExist check if friend relationship exists in db
@@ -84,10 +83,9 @@ func (im *IMService) CheckFriendRelationshipExist(friend FriendRelationship) boo
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return false
-		} else {
-			logrus.Fatalf("query friend relationship between %s and %s error: %s ",
-				friend.FriendMin, friend.FriendMax, err.Error())
 		}
+		logrus.Fatalf("query friend relationship between %s and %s error: %s ",
+			friend.FriendMin, friend.FriendMax, err.Error())
 	}
 
 	return true
@@ -112,9 +110,9 @@ func (im *IMService) CheckFriendRelationshipState(friend FriendRelationship) boo
 
 	if state == "active" {
 		return true
-	} else {
-		return false
 	}
+
+	return false
 }
 
 // DeleteFriendRelationship delete friend relationship,change relationship state
