@@ -2,7 +2,7 @@
 
 A study project of Golang,this is the webim Golang backend program.For front end just go to [webimfe](https://github.com/adolphlwq/webimfe).
 
-## Qequisite
+## Requisite
 - Golang
 - Mysql
 - Node
@@ -15,7 +15,7 @@ git clone https://github.com/adolphlwq/webim
 docker-compose up -d
 ```
 
-Then browse [localhost:8080](localhost:8080)
+Then browse [localhost:8080](http://localhost:8080)
 
 ## TODOs(zh)
 - [X] 注册和登录
@@ -41,6 +41,64 @@ Then browse [localhost:8080](localhost:8080)
 - [ ] 部署
     - [X] server
     - [X] docker-compose
+
+## Architecture design
+### 后端代码目录
+```
+.
+├── api
+│   ├── api.go
+│   ├── friendApi.go
+│   ├── messageApi.go
+│   └── userApi.go
+├── docker-compose.yaml
+├── Dockerfile.dev
+├── LICENSE
+├── Makefile
+├── README.md
+├── service
+│   ├── db.go
+│   ├── entity.go
+│   ├── friend.go
+│   ├── im.go
+│   ├── message.go
+│   └── user.go
+├── vendor
+│   ├── appengine
+│   ├── github.com
+│   ├── golang.org
+│   └── vendor.json
+└── webim.go
+```
+
+- `api目录`：存放API映射关系
+- `service目录`：内部主要逻辑实现
+
+### 聊天部分
+1. 聊天信息存储到数据库
+2. 将每条消息设置状态，根据消息的状态确定已读未读等：
+- `msg_send`：sender发送消息到chat-server
+- `msg_cache`：chat-server接收到sender的消息，但是receiver不在线，缓存到服务器
+- `msg_done`：消息顺利从sender发到receiver
+- `msg_delete`：消息被删除
+3. 聊天主要有3中情况：
+  - 双方都不在线
+  - 双方都在线（实时通信）
+  - 一方在线，一方不在线（缓存信息）
+
+#### 都在线
+```
+          发送消息                  1. transfer msg to receiver by websocket
+sender --------------> ChatServer -------------------------------------------> receiver 
+        `msg_send`                 2. save msg to db with state `msg_done`
+```
+
+#### 只有一方在线
+```
+          发送消息                  1. save msg to db with state `msg_cache`
+sender --------------> ChatServer -------------------------------------------> receiver (`offline`)
+        `msg_send`                 
+```
 
 ## APIs
 - login
@@ -116,60 +174,6 @@ GET    /api/v1/message/unread?receiver=test2
 - websocket chat
 ```
 GET    /api/v1/message/ws/:username
-```
-
-## Architecture design
-### 后端代码目录
-```
-.
-├── api
-│   ├── api.go
-│   ├── friendApi.go
-│   ├── messageApi.go
-│   └── userApi.go
-├── docker-compose.yaml
-├── Dockerfile.dev
-├── LICENSE
-├── Makefile
-├── README.md
-├── service
-│   ├── db.go
-│   ├── entity.go
-│   ├── friend.go
-│   ├── im.go
-│   ├── message.go
-│   └── user.go
-├── vendor
-│   ├── appengine
-│   ├── github.com
-│   ├── golang.org
-│   └── vendor.json
-└── webim.go
-```
-
-- `api目录`：存放API映射关系
-- `service目录`：内部主要逻辑实现
-
-### 聊天部分
-1. 聊天信息存储到数据库
-2. 将每条消息设置状态，根据消息的状态确定已读未读等
-3. 聊天主要有3中情况：
-  - 双方都不在线
-  - 双方都在线（实时通信）
-  - 一方在线，一方不在线（缓存信息）
-
-#### 都在线
-```
-          发送消息                  1. transfer msg to receiver by websocket
-sender --------------> ChatServer -------------------------------------------> receiver 
-        `msg_send`                 2. save msg to db with state `msg_done`
-```
-
-#### 只有一方在线
-```
-          发送消息                  1. save msg to db with state `msg_cache`
-sender --------------> ChatServer -------------------------------------------> receiver (`offline`)
-        `msg_send`                 
 ```
 
 ## Features
