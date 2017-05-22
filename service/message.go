@@ -97,6 +97,12 @@ func (im *IMService) HandleMsgFromWS(ws *websocket.Conn, msgChan chan Message, u
 		err := ws.ReadJSON(&msg)
 		if err != nil {
 			logrus.Warnf("read data from websocket error: %v", err)
+			// close websocket connection
+			err := ws.Close()
+			if err != nil {
+				logrus.Warnf("close websocket of user %s err", err.Error())
+				return
+			}
 			// delete ws of username
 			im.UserWSMap.Delete(username)
 			logrus.Infof("ws of %s has closed, exit this goroutine", username)
@@ -164,7 +170,7 @@ func (im *IMService) GetMaxMsgID() uint64 {
 	if tmpID == nil {
 		return 0
 	}
-	return tmpID.(uint64)
+	return uint64(tmpID.(int64))
 }
 
 // UpdateMsgListState update msg arrays state

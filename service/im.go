@@ -43,7 +43,7 @@ func (uws *SafeUserWSMap) Get(username string) *websocket.Conn {
 	return uws.userWS[username]
 }
 
-// Delete safe delete user in map
+// Delete safe delete user in map, note it does not close ws
 func (uws *SafeUserWSMap) Delete(user string) {
 	uws.mutex.Lock()
 	defer uws.mutex.Unlock()

@@ -47,8 +47,8 @@ func UserLogin(c *gin.Context) {
 	}
 }
 
-// LoginOut handle logout
-func LoginOut(c *gin.Context) {
+// LogOut handle logout
+func LogOut(c *gin.Context) {
 	var user service.User
 	c.BindJSON(&user)
 
@@ -72,9 +72,6 @@ func LoginOut(c *gin.Context) {
 	}(im, user.Username)
 
 	session := sessions.Default(c)
-	logrus.Infof("session is: ", session)
-	logrus.Infof("session is: ", session.Get("webim-session"))
-	logrus.Infof("user is :%s", session.Get(user.Username))
 	username := session.Get(user.Username)
 	if username == nil {
 		c.JSON(http.StatusOK, gin.H{

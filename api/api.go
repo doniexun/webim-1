@@ -47,7 +47,7 @@ func WebIMAPI(serviceUrl string, dbs *service.DBService) {
 	{
 		userAPI.POST("/login", UserLogin)
 		userAPI.POST("/register", UserRegister)
-		userAPI.POST("/logout", LoginOut)
+		userAPI.POST("/logout", LogOut)
 		userAPI.GET("/get", GetUserByName)
 	}
 

@@ -54,11 +54,10 @@ func WSMsgHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{})
 		return
 	}
-	logrus.Infof("set up ws between user: %s and server", username)
 
 	// register username and ws
 	im.UserWSMap.Set(username, ws)
-	logrus.Infof("messageApi: current %s -> ws map is %v", username, ws)
+	logrus.Infof("messageApi: map user %s -> ws", username)
 
 	go im.HandleMsgFromWS(ws, msgChan, username)
 	go im.HandleMsgFromMsgChan(msgChan)
