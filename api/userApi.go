@@ -38,6 +38,8 @@ func UserLogin(c *gin.Context) {
 		// handle session
 		session := sessions.Default(c)
 		session.Set(user.Username, user.Username)
+		// do not forget to save session
+		session.Save()
 		logrus.Infof("register %s to session", session.Get(user.Username))
 		c.JSON(http.StatusOK, gin.H{
 			"status": http.StatusOK,
