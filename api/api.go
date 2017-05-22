@@ -41,8 +41,7 @@ func WebIMAPI(serviceUrl string, dbs *service.DBService) {
 	}))
 
 	router.GET("/health", HealthCheck)
-	router.GET("/incr", Incr)
-	router.GET("/incr2", Incr2)
+	router.GET("/wscount", WSCount)
 
 	userAPI := router.Group("/api/v1/user")
 	{
@@ -69,36 +68,14 @@ func WebIMAPI(serviceUrl string, dbs *service.DBService) {
 	router.Run(serviceUrl)
 }
 
-// Incr
-func Incr(c *gin.Context) {
-	session := sessions.Default(c)
-	var count int
-	v := session.Get("count")
-	if v == nil {
-		count = 0
-	} else {
-		count = v.(int)
-		count++
-	}
-	session.Set("count", count)
-	session.Save()
-	c.JSON(200, gin.H{"count": count})
-}
-
-// Incr2
-func Incr2(c *gin.Context) {
-	var count int
-	session := sessions.Default(c)
-	v := session.Get("count")
-	if v == nil {
-		count = 0
-	} else {
-		count = v.(int)
-	}
-	c.JSON(200, gin.H{"count": count})
-}
-
 // HealthCheck return "health" if everything is OK
 func HealthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": "health"})
+}
+
+// WSCount return count of websockets
+func WSCount(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"data":   im.UserWSMap.Length()})
 }

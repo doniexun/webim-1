@@ -74,6 +74,14 @@ func (uws *SafeUserWSMap) String() map[string]websocket.Conn {
 	return dist
 }
 
+// Length count of websockets connections
+func (uws *SafeUserWSMap) Length() int {
+	uws.mutex.Lock()
+	defer uws.mutex.Unlock()
+
+	return len(uws.userWS)
+}
+
 // SafeMsgID safe generate msg id
 // refer https://github.com/nlopes/slack/blob/db68538b374a5f052bf6befea117ac74760f4e8e/messageID.go
 type SafeMsgID struct {
