@@ -31,8 +31,8 @@ func UserLogin(c *gin.Context) {
 	c.BindJSON(&user)
 
 	err := im.UserLogin(user.Username, user.Password)
-	logrus.Infof("err when login is: %v", err)
 	if err != nil {
+		logrus.Infof("err when login is: %v", err)
 		c.JSON(http.StatusOK, gin.H{"status": 400, "data": err.Error()})
 	} else {
 		// handle session
@@ -56,35 +56,35 @@ func LogOut(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	logrus.Infof("user to logout is %v", user)
+	logrus.Infof("user to logout is %v", user.Username)
 
 	// TODO clean user websocket
 	// isWS true user has websocket false or not
-	go func(im *service.IMService, username string) {
-		if isWS := im.UserWSMap.HasKey(username); isWS {
-			ws := im.UserWSMap.Get(username)
-			err := ws.Close()
-			if err != nil {
-				logrus.Fatalf("close websocket error: %v", err)
-			}
-			im.UserWSMap.Delete(username)
-		}
-	}(im, user.Username)
+	// if isWS := im.UserWSMap.HasKey(user.Username); isWS {
+	// 	ws := im.UserWSMap.Get(user.Username)
+	// 	err := ws.Close()
+	// 	if err != nil {
+	// 		logrus.Fatalf("close websocket error: %v", err)
+	// 	}
+	// 	im.UserWSMap.Delete(user.Username)
+	// }
+	//  close websocket will be done in im.HandleMsgFromWS
 
 	session := sessions.Default(c)
 	username := session.Get(user.Username)
+	logrus.Infof("username in session is %v", username)
 	if username == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"status": 200,
 			"data":   "logout success"})
-		logrus.Info("username is nil, return directly")
+		logrus.Infof("username %s does not exists in session, return directly", user.Username)
 	} else {
 		session.Delete(user.Username)
 		session.Save()
 		c.JSON(http.StatusOK, gin.H{
 			"status": 200,
 			"data":   "logout success"})
-		logrus.Info("remove username in session, return directly")
+		logrus.Infof("remove username %s in session, return directly", user.Username)
 	}
 }
 

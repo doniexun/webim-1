@@ -5,6 +5,7 @@ import (
 
 	"github.com/Sirupsen/logrus"
 	"github.com/adolphlwq/webim/service"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
@@ -48,6 +49,13 @@ func WSMsgHandler(c *gin.Context) {
 		return
 	}
 
+	// check user if login
+	session := sessions.Default(c)
+	if sUsername := session.Get(username); sUsername == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"data": "need login"})
+		return
+	}
+
 	ws, err := wsupgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		logrus.Warnf("Failed to set websocket upgrade: %+v", err)
@@ -57,7 +65,7 @@ func WSMsgHandler(c *gin.Context) {
 
 	// register username and ws
 	im.UserWSMap.Set(username, ws)
-	logrus.Infof("messageApi: map user %s -> ws", username)
+	logrus.Infof("messageApi.go WSMsgHandler set %s --> ws", username)
 
 	go im.HandleMsgFromWS(ws, msgChan, username)
 	go im.HandleMsgFromMsgChan(msgChan)

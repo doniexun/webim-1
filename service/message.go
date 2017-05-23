@@ -95,15 +95,13 @@ func (im *IMService) HandleMsgFromWS(ws *websocket.Conn, msgChan chan Message, u
 	for {
 		var msg Message
 		err := ws.ReadJSON(&msg)
+		// refer to https://godoc.org/github.com/gorilla/websocket#IsUnexpectedCloseError
 		if err != nil {
-			logrus.Warnf("read data from websocket error: %v", err)
-			// close websocket connection
-			err := ws.Close()
-			if err != nil {
-				logrus.Warnf("close websocket of user %s err", err.Error())
-				return
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
+				logrus.Warnf("read data from websocket error: %v", err)
 			}
 			// delete ws of username
+			logrus.Infof("message.go HandleMsgFromWS delete %s in UserWSMap", username)
 			im.UserWSMap.Delete(username)
 			logrus.Infof("ws of %s has closed, exit this goroutine", username)
 			return
@@ -115,6 +113,7 @@ func (im *IMService) HandleMsgFromWS(ws *websocket.Conn, msgChan chan Message, u
 
 // SendMsgToReceiver
 func (im *IMService) SendMsgToReceiver(msg Message) {
+	logrus.Infof("message.go SendMsgToReceiver get ws of receiver: %s", msg.Receiver)
 	ws := im.UserWSMap.Get(msg.Receiver)
 	// TODOs validate ws?
 	ws.WriteJSON(msg)
