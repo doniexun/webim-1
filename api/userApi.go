@@ -39,7 +39,10 @@ func UserLogin(c *gin.Context) {
 		session := sessions.Default(c)
 		session.Set(user.Username, user.Username)
 		// do not forget to save session
-		session.Save()
+		err := session.Save()
+		if err != nil {
+			logrus.Fatalf("save session error: %v", err)
+		}
 		logrus.Infof("register %s to session", session.Get(user.Username))
 		c.JSON(http.StatusOK, gin.H{
 			"status": http.StatusOK,
@@ -80,7 +83,10 @@ func LogOut(c *gin.Context) {
 		logrus.Infof("username %s does not exists in session, return directly", user.Username)
 	} else {
 		session.Delete(user.Username)
-		session.Save()
+		err := session.Save()
+		if err != nil {
+			logrus.Fatalf("save session error: %v", err)
+		}
 		c.JSON(http.StatusOK, gin.H{
 			"status": 200,
 			"data":   "logout success"})
