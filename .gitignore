@@ -1,1 +1,3 @@
 webim
+vendor/*
+!vendor/vendor.json
