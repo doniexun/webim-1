@@ -1,0 +1,7 @@
+FROM daocloud.io/library/node:latest 
+MAINTAINER Luke kenan3015@gmail.com
+
+ENV FRESHED_AT 2017-05-14
+RUN npm i http-server -g
+ADD dist /webimfe
+CMD ["http-server", "webimfe"]

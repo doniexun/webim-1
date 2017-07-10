@@ -1,1 +1,9 @@
 webim
+frontendnode_modules/
+frontenddist/
+frontendnpm-debug.log*
+frontendyarn-debug.log*
+frontendyarn-error.log*
+frontendtest/unit/coverage
+frontendtest/e2e/reports
+frontendselenium-debug.log
