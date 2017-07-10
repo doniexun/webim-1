@@ -7,3 +7,5 @@ frontendyarn-error.log*
 frontendtest/unit/coverage
 frontendtest/e2e/reports
 frontendselenium-debug.log
+vendor/*
+!vendor/vendor.json
