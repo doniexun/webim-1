@@ -1,7 +1,6 @@
 package server
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/adolphlwq/webim/service"
@@ -16,7 +15,7 @@ var (
 )
 
 // WebIMAPI main api endpoint for webim
-func WebIMAPI(serviceUrl string, dbs *service.DBService) {
+func WebIMAPI(serviceUrl string, dbs *service.DBService, appService *ServiceProvider) {
 	router := gin.Default()
 	im = service.NewIMService(dbs)
 
@@ -40,9 +39,7 @@ func WebIMAPI(serviceUrl string, dbs *service.DBService) {
 		MaxAge: 12 * time.Hour,
 	}))
 
-	router.GET("/health", HealthCheck)
-	router.GET("/incr", Incr)
-	router.GET("/incr2", Incr2)
+	router.GET("/health", WrapeService(appService, HealthCheck))
 
 	userAPI := router.Group("/api/v1/user")
 	{
@@ -67,40 +64,6 @@ func WebIMAPI(serviceUrl string, dbs *service.DBService) {
 		messageAPI.GET("/ws/:username", WSMsgHandler)
 	}
 	router.Run(serviceUrl)
-}
-
-// Incr
-func Incr(c *gin.Context) {
-	session := sessions.Default(c)
-	var count int
-	v := session.Get("count")
-	if v == nil {
-		count = 0
-	} else {
-		count = v.(int)
-		count++
-	}
-	session.Set("count", count)
-	session.Save()
-	c.JSON(200, gin.H{"count": count})
-}
-
-// Incr2
-func Incr2(c *gin.Context) {
-	var count int
-	session := sessions.Default(c)
-	v := session.Get("count")
-	if v == nil {
-		count = 0
-	} else {
-		count = v.(int)
-	}
-	c.JSON(200, gin.H{"count": count})
-}
-
-// HealthCheck return "health" if everything is OK
-func HealthCheck(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": "health"})
 }
 
 // RequestHandler alias
