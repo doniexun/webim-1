@@ -12,8 +12,7 @@ var (
 	session sessions.Session
 )
 
-// Start start webim server
-func Start(addr string, appService *ServiceProvider) {
+func builfEngine(appService *ServiceProvider) *gin.Engine {
 	// use session
 	store := sessions.NewCookieStore([]byte("secret"))
 	store.Options(sessions.Options{
@@ -38,6 +37,12 @@ func Start(addr string, appService *ServiceProvider) {
 
 	router.GET("/health", WrapeService(appService, HealthCheck))
 
+	return router
+}
+
+// Start start webim server
+func Start(addr string, appService *ServiceProvider) {
+	router := builfEngine(appService)
 	router.Run(addr)
 }
 
