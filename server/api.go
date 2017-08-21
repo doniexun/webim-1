@@ -1,4 +1,4 @@
-package api
+package server
 
 import (
 	"net/http"
@@ -101,4 +101,14 @@ func Incr2(c *gin.Context) {
 // HealthCheck return "health" if everything is OK
 func HealthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": "health"})
+}
+
+// RequestHandler alias
+type RequestHandler func(*gin.Context, *ServiceProvider)
+
+// WrapeService wrape instance needed by gin.Engine
+func WrapeService(appService *ServiceProvider, handler RequestHandler) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		handler(c, appService)
+	}
 }
