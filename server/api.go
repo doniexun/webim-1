@@ -12,8 +12,8 @@ var (
 	session sessions.Session
 )
 
-// WebIMAPI main api endpoint for webim
-func WebIMAPI(serviceUrl string, appService *ServiceProvider) {
+// Start start webim server
+func Start(addr string, appService *ServiceProvider) {
 	// use session
 	store := sessions.NewCookieStore([]byte("secret"))
 	store.Options(sessions.Options{
@@ -25,7 +25,6 @@ func WebIMAPI(serviceUrl string, appService *ServiceProvider) {
 	router.Use(sessions.Sessions("webim-session", store))
 	// use cors
 	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://tinyurl.api.adolphlwq.xyz"},
 		AllowMethods: []string{"PUT", "GET", "POST"},
 		AllowHeaders: []string{"Content-Type"},
 		ExposeHeaders: []string{"Content-Length", "Access-Control-Allow-Origin",
@@ -39,7 +38,7 @@ func WebIMAPI(serviceUrl string, appService *ServiceProvider) {
 
 	router.GET("/health", WrapeService(appService, HealthCheck))
 
-	router.Run(serviceUrl)
+	router.Run(addr)
 }
 
 // RequestHandler alias
