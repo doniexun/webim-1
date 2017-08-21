@@ -1,9 +1,10 @@
 # webim
 
-A web instant message(im) service written by Golang,this is the backend program.For front end just go to [webimfe](https://github.com/adolphlwq/webimfe).
+A web instant message(im) service written by Golang,this is the backend program.
 
 ## Requisites
 - Golang
+- [govendor](https://github.com/kardianos/govendor)
 - Mysql
 - Node
 - Docker
@@ -11,19 +12,19 @@ A web instant message(im) service written by Golang,this is the backend program.
 
 ## Quick start
 ```
-git clone https://github.com/adolphlwq/webim
+git clone https://github.com/adolphlwq/webim $GOPATH/src/github.com/adolphlwq/webim
 docker-compose up -d
 ```
 
 Then browse [localhost:8080](localhost:8080)
 
 ## TODOs
-- [ ] test case
-- [ ] improve auth and session logic
-    - [ ] map websocket to user
 - [X] auth(login and register)
     - [X] login
     - [X] register
+- [X] deploy
+    - [X] server
+    - [X] [docker-compose0(/docker-compose.yaml)
 - [ ] contacts 
     - [X] list **all contacts of you**
         - [X] id
@@ -40,115 +41,9 @@ Then browse [localhost:8080](localhost:8080)
     - [ ] see history messages
     - [X] send and receiver message(real time if both are online)
     - [ ] delete messages
-- [X] deploy
-    - [X] server
-    - [X] [docker-compose0(/docker-compose.yaml)
-
-## APIs
-- login
-```
-application/json
-POST   /api/v1/user/login
-```
-- register
-```
-application/json
-POST   /api/v1/user/register
-```
-- logout
-```
-application/json
-POST   /api/v1/user/logout
-```
-- get user info
-```
-GET    /api/v1/user/get?username=luwenquan
-// http://localhost:8877/api/v1/user/get?username=luwenquan
-{
-  "data": {
-    "id": 1,
-    "username": "luwenquan",
-    "password": "",
-    "created_time": 1495034536
-  },
-  "status": 200
-}
-```
-- add friend
-```
-POST   /api/v1/friend/add
-```
-- list friends
-```
-GET    /api/v1/friend/list
-// http://localhost:8877/api/v1/friend/list?username=luwenquan
-{
-  "data": [
-    "test1",
-    "test2"
-  ],
-  "status": 200
-}
-```
-- delete friend
-```
-PUT    /api/v1/friend/delete
-{
-  "data": "delete success.",
-  "status": 200
-}
-```
-- get all unread msgs of specific user
-```
-GET    /api/v1/message/unread?receiver=test2
-{
-  "data": [
-    {
-      "id": 33,
-      "sender": "luwenquan",
-      "receiver": "test2",
-      "msg": "we",
-      "send_time": 1495094984,
-      "state": "msg_cache"
-    }
-  ],
-  "status": 200
-}
-```
-- websocket chat
-```
-GET    /api/v1/message/ws/:username
-```
-
+- [ ] test case
+    
 ## Architecture design
-### backend directory
-```
-.
-├── api
-│   ├── api.go
-│   ├── friendApi.go
-│   ├── messageApi.go
-│   └── userApi.go
-├── docker-compose.yaml
-├── Dockerfile.dev
-├── LICENSE
-├── Makefile
-├── README.md
-├── service
-│   ├── db.go
-│   ├── entity.go
-│   ├── friend.go
-│   ├── im.go
-│   ├── message.go
-│   └── user.go
-├── vendor
-│   ├── appengine
-│   ├── github.com
-│   ├── golang.org
-│   └── vendor.json
-└── webim.go
-```
-
 ### chat logic design
 1. messages are saved to db(mysql)
 2. set `state` to each message
