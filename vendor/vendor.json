@@ -177,8 +177,10 @@
 			"revision": ""
 		},
 		{
+			"checksumSHA1": "yMZF9dXHnTzHIOvYzLfqvcsU4mQ=",
 			"path": "golang.org/x/sys/unix",
-			"revision": ""
+			"revision": "07c182904dbd53199946ba614a412c61d3c548f5",
+			"revisionTime": "2017-08-16T12:26:40Z"
 		},
 		{
 			"path": "gopkg.in/go-playground/validator.v8",
