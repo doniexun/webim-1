@@ -20,4 +20,6 @@ func TestUserRegister(t *testing.T) {
 	m2 := postJSON(userRegisterAPI, strings.NewReader(data))
 	assert.NotNil(t, m2)
 	assert.Equal(t, m2["message"], ErrUserExisted)
+
+	truncateTable("users")
 }

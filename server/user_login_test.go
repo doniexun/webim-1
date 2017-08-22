@@ -39,5 +39,5 @@ func TestUserLogin(t *testing.T) {
 		t.Errorf("bad token in login request response.")
 	}
 
-	clearDatabase()
+	truncateTable("users")
 }
