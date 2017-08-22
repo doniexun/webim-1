@@ -51,8 +51,17 @@ func ContactAdd(c *gin.Context, appService *ServiceProvider) {
 	var tmpContact entity.Contact
 	appService.MysqlClient.DB.Where("friend_min = ? and friend_max = ?", contact.FriendMin, contact.FriendMax).First(&tmpContact)
 	if tmpContact.FriendMax != "" {
-		c.JSON(http.StatusUnprocessableEntity, CommonResponse{
-			Message: ErrContactRealitionshipExisted,
+		// relationship exists, check if active
+		if tmpContact.State == "active" {
+			c.JSON(http.StatusUnprocessableEntity, CommonResponse{
+				Message: ErrContactRealitionshipExisted,
+			})
+			return
+		}
+		// relationship inactive, make it active
+		appService.MysqlClient.DB.Model(&tmpContact).Update("state", "active")
+		c.JSON(http.StatusOK, CommonResponse{
+			Message: ContactAddSuccess,
 		})
 		return
 	}
