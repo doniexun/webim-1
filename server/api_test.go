@@ -80,3 +80,15 @@ func postJSON(postURL string, data io.Reader) map[string]interface{} {
 func insertTestUser(user entity.User) {
 	appService.MysqlClient.DB.Create(&user)
 }
+
+func truncateTable(table string) {
+	sqlDB := appService.MysqlClient.DB.DB()
+	sql := "TRUNCATE TABLE " + table
+
+	_, err := sqlDB.Exec(sql)
+	if err != nil {
+		logrus.Fatalf("truncate table %s error %v.\n", table, err)
+	}
+
+	logrus.Println("truncate table ", table)
+}
