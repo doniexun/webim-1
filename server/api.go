@@ -40,6 +40,7 @@ func builfEngine(appService *ServiceProvider) *gin.Engine {
 	{
 		userAPI.POST("/register", WrapeService(appService, UserRegister))
 		userAPI.POST("/login", WrapeService(appService, UserLogin))
+		userAPI.GET("/list", WrapeService(appService, UserList))
 	}
 
 	return router
