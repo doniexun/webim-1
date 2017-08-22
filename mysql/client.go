@@ -81,6 +81,6 @@ func (c *Client) truncateTable(table string) {
 
 	_, err := sqlDB.Exec(sql)
 	if err != nil {
-		logrus.Fatalf("truncate table %s error %v.\n", table, err)
+		logrus.Fatalf("truncate table %s error: %v.\n", table, err)
 	}
 }
