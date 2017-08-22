@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/adolphlwq/webim/mysql"
+	"github.com/gin-gonic/gin"
 )
 
 const (
@@ -24,6 +25,9 @@ func init() {
 	appService = &ServiceProvider{
 		MysqlClient: mysqlClient,
 	}
+
+	// set gin mode
+	gin.SetMode(gin.TestMode)
 }
 
 func clearDatabase() {
