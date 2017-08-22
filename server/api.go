@@ -36,6 +36,10 @@ func builfEngine(appService *ServiceProvider) *gin.Engine {
 	}))
 
 	router.GET("/health", WrapeService(appService, HealthCheck))
+	userAPI := router.Group("/api/v1/user")
+	{
+		userAPI.POST("/register", WrapeService(appService, UserRegister))
+	}
 
 	return router
 }
