@@ -30,10 +30,10 @@ func clearDatabase() {
 	appService.MysqlClient.DropDatabase()
 }
 
-func StartTestServer(t *testing.T) {
+func startTestServer(t *testing.T) {
 	go func() {
 		testServer := builfEngine(appService)
-		testServer.Run(TestAddr)
+		testServer.Run(":" + TestPort)
 	}()
 
 	t.Logf("wait 2s for test server to start...\n")
