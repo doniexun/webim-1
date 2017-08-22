@@ -20,7 +20,7 @@ func GenerateToken(user *entity.User) string {
 
 	tokenString, err := jwtToken.SignedString([]byte(TokenKey))
 	if err != nil {
-		logrus.Fatal("generate token string error: %v\n", err)
+		logrus.Fatalf("generate token string error: %v\n", err)
 	}
 
 	return tokenString
