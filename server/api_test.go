@@ -56,6 +56,27 @@ func startTestServer(t *testing.T) {
 	time.Sleep(time.Second * 2)
 }
 
+func getRequest(getURL string) map[string]interface{} {
+	resp, err := http.Get(getURL)
+	if err != nil {
+		logrus.Fatalf("get request error: %v\n", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logrus.Fatalf("read body of response error: %v", err)
+	}
+
+	var mp map[string]interface{}
+	err = json.Unmarshal(body, &mp)
+	if err != nil {
+		logrus.Fatalf("parse body of response error: %v", err)
+	}
+
+	return mp
+}
+
 func postJSON(postURL string, data io.Reader) map[string]interface{} {
 	resp, err := http.Post(postURL, "application/json", data)
 	if err != nil {
