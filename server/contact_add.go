@@ -59,6 +59,7 @@ func ContactAdd(c *gin.Context, appService *ServiceProvider) {
 
 	// contact relationship does not exist, save to db
 	contact.AddedTime = time.Now().UTC()
+	contact.State = "active"
 	appService.MysqlClient.DB.Create(&contact)
 	c.JSON(http.StatusOK, CommonResponse{
 		Message: ContactAddSuccess,
