@@ -12,11 +12,10 @@ import (
 
 var (
 	setting      *MySQLConfig = NewMySQLConfig(configPath)
-	client       *Client      = NewMySQLClient(configPath)
 	TestUsername              = "test"
 )
 
-func newSqlDB(setting *MySQLConfig) *sql.DB {
+func newSQLDB(setting *MySQLConfig) *sql.DB {
 	source := fmt.Sprintf("%s:%s@tcp(%s:%s)/", setting.User, setting.Password,
 		setting.Host, setting.Port)
 	db, err := sql.Open("mysql", source)
@@ -29,17 +28,14 @@ func newSqlDB(setting *MySQLConfig) *sql.DB {
 
 func TestNewMySQLClient(t *testing.T) {
 	client := NewMySQLClient(configPath)
-	if client == nil {
-		t.Errorf("client should not be nil")
-	}
-
-	t.Logf("new mysql client success, drop test database.\n")
+	assert.NotNil(t, client)
 	client.DropDatabase()
 }
 
 func TestCheckDB(t *testing.T) {
+	client := NewMySQLClient(configPath)
 	CheckDB(setting)
-	db := newSqlDB(setting)
+	db := newSQLDB(setting)
 	defer db.Close()
 
 	// check if database exist
@@ -54,10 +50,12 @@ func TestCheckDB(t *testing.T) {
 }
 
 func TestDropDatabase(t *testing.T) {
+	client := NewMySQLClient(configPath)
 	client.DropDatabase()
 }
 
 func TestChekcUserExistedByUsername(t *testing.T) {
+	client := NewMySQLClient(configPath)
 	client.truncateTable("users")
 
 	// test user does not exist
