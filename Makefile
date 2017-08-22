@@ -4,4 +4,4 @@ PKGS=$(shell go list ./... | grep -E -v "(vendor)")
 all:
 	go build $(GO_BUILD_FLAGS) -o webim
 test:
-	go test $(PKGS)
+	go test --cover $(GO_TEST_FLAGS) $(PKGS)
