@@ -9,22 +9,28 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/adolphlwq/webim/entity"
 	"github.com/adolphlwq/webim/mysql"
+	"github.com/adolphlwq/webim/util"
 	"github.com/gin-gonic/gin"
 )
 
 const (
-	TestPort = "9066"
-	TestAddr = "http://0.0.0.0:9066"
+	TestPort     = "9066"
+	TestAddr     = "http://0.0.0.0:9066"
+	TestUsername = "test"
+	TestPassword = "123456"
 )
 
 var (
-	mysqlClient *mysql.Client
-	appService  *ServiceProvider
-	configPath  string
+	mysqlClient     *mysql.Client
+	appService      *ServiceProvider
+	configPath      string
+	encryptPassword string
 )
 
 func init() {
+	encryptPassword = util.EncryptPasswordWithSalt(TestUsername, TestPassword)
 	configPath = "../test.properties"
 	mysqlClient = mysql.NewMySQLClient(configPath)
 	appService = &ServiceProvider{
@@ -37,6 +43,7 @@ func init() {
 
 func clearDatabase() {
 	appService.MysqlClient.DropDatabase()
+	logrus.Println("delete test database ", appService.MysqlClient.Database)
 }
 
 func startTestServer(t *testing.T) {
@@ -68,4 +75,8 @@ func postJSON(postURL string, data io.Reader) map[string]interface{} {
 	}
 
 	return mp
+}
+
+func insertTestUser(user entity.User) {
+	appService.MysqlClient.DB.Create(&user)
 }
