@@ -6,11 +6,14 @@ import (
 	"testing"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/adolphlwq/webim/entity"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
-	setting *MySQLConfig = NewMySQLConfig(configPath)
-	client  *Client      = NewMySQLClient(configPath)
+	setting      *MySQLConfig = NewMySQLConfig(configPath)
+	client       *Client      = NewMySQLClient(configPath)
+	TestUsername              = "test"
 )
 
 func newSqlDB(setting *MySQLConfig) *sql.DB {
@@ -52,4 +55,22 @@ func TestCheckDB(t *testing.T) {
 
 func TestDropDatabase(t *testing.T) {
 	client.DropDatabase()
+}
+
+func TestChekcUserExistedByUsername(t *testing.T) {
+	client.truncateTable("users")
+
+	// test user does not exist
+	isExisted1 := client.ChekcUserExistedByUsername(TestUsername)
+	assert.Equal(t, isExisted1, false)
+
+	// test user has existed
+	testUser := entity.User{
+		Username: TestUsername,
+	}
+	client.DB.Create(&testUser)
+	isExisted2 := client.ChekcUserExistedByUsername(TestUsername)
+	assert.Equal(t, isExisted2, true)
+
+	client.truncateTable("users")
 }

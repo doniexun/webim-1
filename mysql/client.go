@@ -65,3 +65,22 @@ func (c *Client) DropDatabase() {
 		logrus.Fatalf("drop database %s error: %v", c.Database, err)
 	}
 }
+
+// ChekcUserExistedByUsername check table users to see if username existed
+// true existed and false not
+func (c *Client) ChekcUserExistedByUsername(username string) bool {
+	var tmpUser entity.User
+	c.DB.Where("username = ?", username).First(&tmpUser)
+	return tmpUser.Username != ""
+}
+
+// truncateTable truncate table
+func (c *Client) truncateTable(table string) {
+	sqlDB := c.DB.DB()
+	sql := "TRUNCATE TABLE " + table
+
+	_, err := sqlDB.Exec(sql)
+	if err != nil {
+		logrus.Fatalf("truncate table %s error %v.\n", table, err)
+	}
+}
