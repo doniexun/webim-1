@@ -13,6 +13,7 @@ import (
 	"github.com/adolphlwq/webim/mysql"
 	"github.com/adolphlwq/webim/util"
 	"github.com/gin-gonic/gin"
+	"github.com/parnurzeal/gorequest"
 )
 
 const (
@@ -91,6 +92,23 @@ func postJSON(postURL string, data io.Reader) map[string]interface{} {
 
 	var mp map[string]interface{}
 	err = json.Unmarshal(body, &mp)
+	if err != nil {
+		logrus.Fatalf("parse body of response error: %v", err)
+	}
+
+	return mp
+}
+
+func deleteRequest(deleteURL string, data interface{}) map[string]interface{} {
+	// test without all needed info
+	r := gorequest.New()
+	_, body, errs := r.Delete(deleteURL).Send(data).End()
+	if len(errs) != 0 {
+		logrus.Fatalln("delete requests error: ", errs)
+	}
+
+	var mp map[string]interface{}
+	err := json.Unmarshal([]byte(body), &mp)
 	if err != nil {
 		logrus.Fatalf("parse body of response error: %v", err)
 	}
