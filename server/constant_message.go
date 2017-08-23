@@ -14,10 +14,11 @@ const (
 
 // info message
 const (
-	InfoHealthCheck      = "health."
-	UserRegisterSuccess  = "user register success."
-	UserLoginSuccess     = "user login success."
-	UserListSuccess      = "users list."
-	ContactAddSuccess    = "contact relationship add success."
-	ContactDeleteSuccess = "contact relationship delete success."
+	InfoHealthCheck               = "health."
+	UserRegisterSuccess           = "user register success."
+	UserLoginSuccess              = "user login success."
+	UserListSuccess               = "users list."
+	ContactAddSuccess             = "contact relationship add success."
+	ContactDeleteSuccess          = "contact relationship delete success."
+	ContactRelationshipIsInactive = "contact relationship is already inactive, do nothing."
 )
