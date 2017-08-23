@@ -24,26 +24,25 @@ Then browse [localhost:8080](localhost:8080)
 - [X] auth(login and register)
     - [X] login
     - [X] register
-- [X] deploy
-    - [X] server
-    - [X] [docker-compose0(/docker-compose.yaml)
+    - [X] list
 - [ ] contacts 
     - [X] list **all contacts of you**
-        - [X] id
         - [ ] list messafes unread
             - [X] API
             - [ ] front end render
-    - [X] add new contact by id
+    - [X] add new contact
     - [X] delete contact
-        - [X] delete
-        - [X] reserve messages for add contact again
-- [ ] **chat**
+    - [X] list contact
+- [ ] **chat/message**
     - [X] into chat page when click a contact of contact list
     - [ ] unread set to zero
     - [ ] see history messages
-    - [X] send and receiver message(real time if both are online)
+    - [X] send and receive message(real time if both are online)
     - [ ] delete messages
-- [ ] test case
+- [X] deploy
+    - [X] server
+    - [X] docker-compose
+- [X] test case
     
 ## Architecture design
 ### chat logic design
@@ -72,3 +71,4 @@ sender --------------> ChatServer -------------------------------------------> r
 - [使用Golang scrypt包加密后存储MySQL编码问题](http://stackoverflow.com/questions/8291184/mysql-general-error-1366-incorrect-string-value?rq=1)...(Error 1366: Incorrect string value: '\xC9c\x8B~\xB9\xA0...' for column 'password')
 - [change utf8 to utf8mb4 in mysql 5.5+](https://mathiasbynens.be/notes/mysql-utf8mb4)
 - [DB:如何存储好友关系](https://www.zhihu.com/question/20216864)
+- [A Million WebSockets and Go](https://medium.freecodecamp.org/million-websockets-and-go-cc58418460bb)
