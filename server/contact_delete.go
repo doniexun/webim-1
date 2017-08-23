@@ -60,8 +60,15 @@ func ContactDelete(c *gin.Context, appService *ServiceProvider) {
 	}
 
 	// change relationship state
-	appService.MysqlClient.DB.Model(&tmpContact).Update("state", "inactive")
-	c.JSON(http.StatusOK, CommonResponse{
-		Message: ContactDeleteSuccess,
+	if tmpContact.State == "active" {
+		appService.MysqlClient.DB.Model(&tmpContact).Update("state", "inactive")
+		c.JSON(http.StatusOK, CommonResponse{
+			Message: ContactDeleteSuccess,
+		})
+		return
+	}
+
+	c.JSON(http.StatusUnprocessableEntity, CommonResponse{
+		Message: ContactRelationshipIsInactive,
 	})
 }
