@@ -46,6 +46,7 @@ func builfEngine(appService *ServiceProvider) *gin.Engine {
 	{
 		contactAPI.POST("/add", WrapeService(appService, ContactAdd))
 		contactAPI.DELETE("/delete", WrapeService(appService, ContactDelete))
+		contactAPI.GET("/list", WrapeService(appService, ContactList))
 	}
 
 	return router
