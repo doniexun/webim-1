@@ -45,6 +45,7 @@ func builfEngine(appService *ServiceProvider) *gin.Engine {
 	contactAPI := router.Group("/api/v1/contact")
 	{
 		contactAPI.POST("/add", WrapeService(appService, ContactAdd))
+		contactAPI.DELETE("/delete", WrapeService(appService, ContactDelete))
 	}
 
 	return router
