@@ -1,10 +1,10 @@
-GO=$(shell which go)
+GO_BUILD_FLAGS=
+GO_TEST_FLAGS=
+PKGS=$(shell go list ./... | grep -E -v "(vendor)")
 
-build:
-	CGO_ENABLED=0 GOOS=linux $(GO) build -a -installsuffix cgo -o webim
-build-lls:
-	docker build -t adolphlwq/webim:lls -f Dockerfile.dev .
-push-lls: build-dev
-	docker push adolphlwq/webim:lls
+all:
+	go build $(GO_BUILD_FLAGS) -o webim
 test:
-	./webim -dbname testwebim -user root -pass root -dbport 3306
+	go test --cover $(GO_TEST_FLAGS) $(PKGS)
+dev:
+	./webim -config ./dev.properties
