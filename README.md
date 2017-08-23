@@ -1,6 +1,6 @@
 # webim
 
-[![Build Status](https://travis-ci.org/adolphlwq/webim.svg?branch=dev)](https://travis-ci.org/adolphlwq/webim)  [![Go Report Card](https://goreportcard.com/badge/github.com/adolphlwq/webim)](https://goreportcard.com/report/github.com/adolphlwq/webim)  [![GoDoc](https://godoc.org/github.com/adolphlwq/webim?status.svg)](https://godoc.org/github.com/adolphlwq/webim)
+[![Build Status](https://travis-ci.org/adolphlwq/webim.svg?branch=master)](https://travis-ci.org/adolphlwq/webim)  [![Go Report Card](https://goreportcard.com/badge/github.com/adolphlwq/webim)](https://goreportcard.com/report/github.com/adolphlwq/webim)  [![GoDoc](https://godoc.org/github.com/adolphlwq/webim?status.svg)](https://godoc.org/github.com/adolphlwq/webim)
 
 A web instant message(im) service written by Golang,this is the backend program.
 
