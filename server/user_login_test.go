@@ -11,6 +11,7 @@ import (
 
 func TestUserLogin(t *testing.T) {
 	startTestServer(t)
+	truncateTable("users")
 	userLoginAPI := TestAddr + "/api/v1/user/login"
 
 	// test not enough info
