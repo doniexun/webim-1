@@ -48,6 +48,10 @@ func builfEngine(appService *ServiceProvider) *gin.Engine {
 		contactAPI.DELETE("/delete", WrapeService(appService, ContactDelete))
 		contactAPI.GET("/list", WrapeService(appService, ContactList))
 	}
+	messageAPI := router.Group("/api/v1/message")
+	{
+		messageAPI.GET("/:username/unread", WrapeService(appService, MessageUnread))
+	}
 
 	return router
 }
