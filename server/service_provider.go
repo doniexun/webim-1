@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/adolphlwq/webim/entity"
 	"github.com/adolphlwq/webim/mysql"
 	"github.com/gorilla/websocket"
 )
@@ -9,4 +10,6 @@ import (
 type ServiceProvider struct {
 	MysqlClient       *mysql.Client
 	WebSocketUpgrader *websocket.Upgrader
+	WebSocketSession  *WebSocketSession
+	MessageChan       chan entity.Message
 }

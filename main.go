@@ -3,9 +3,12 @@ package main
 import (
 	"flag"
 	"net"
+	"net/http"
 
+	"github.com/adolphlwq/webim/entity"
 	"github.com/adolphlwq/webim/mysql"
 	"github.com/adolphlwq/webim/server"
+	"github.com/gorilla/websocket"
 )
 
 func main() {
@@ -21,8 +24,16 @@ func main() {
 
 	addr := net.JoinHostPort(h, p)
 	mysqlClient := mysql.NewMySQLClient(configPath)
+	wsUpgrader := &websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
 	appService := &server.ServiceProvider{
-		MysqlClient: mysqlClient,
+		MysqlClient:       mysqlClient,
+		WebSocketUpgrader: wsUpgrader,
+		WebSocketSession:  server.NewWebSocketSession(),
+		MessageChan:       make(chan entity.Message, 20),
 	}
 
 	server.Start(addr, appService)
