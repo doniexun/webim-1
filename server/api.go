@@ -51,8 +51,8 @@ func builfEngine(appService *ServiceProvider) *gin.Engine {
 	messageAPI := router.Group("/api/v1/message")
 	{
 		messageAPI.GET("/:username/unread", WrapeService(appService, MessageUnread))
-		messageAPI.GET("/ws/:token", WrapeService(appService, MessageWebSocket))
 	}
+	router.GET("/ws/:token", WrapeService(appService, MessageWebSocket))
 
 	return router
 }
